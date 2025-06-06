@@ -39,7 +39,8 @@ A live demo of ChironSurvival is available at: [https://chironsurvival.web.app](
 - Firebase Authentication & Firestore
 - TailwindCSS for styling
 - PWA capabilities
-- Google Gemini AI for medical guidance
+- **Primary Medical AI:** [Custom Medical MCP Server](https://github.com/HeyBatlle1/medical-mcp-server) (integrating Army Ranger Handbook protocols)
+- **Fallback Medical AI:** Google Gemini AI
 
 ## 📦 Installation
 
