@@ -1,9 +1,8 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { AppState, InjuryData, EmergencyContact } from '../types';
 import { useAuth } from './AuthContext';
-// Firebase/Firestore imports removed:
-// import { collection, query, where, onSnapshot } from 'firebase/firestore';
-// import { db } from '../config/firebase';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { db } from '../config/firebase';
 
 // Initial state with empty arrays
 const initialState: AppState = {
@@ -107,13 +106,34 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(appReducer, initialState);
-  // const { user } = useAuth(); // user object is now always null from AuthContext
+  const { user } = useAuth();
 
-  // Removed Firestore subscription useEffect.
-  // Injury history will now be managed locally or via other API calls (e.g., databaseApi.ts)
-  // If you need to load history on app start, a new useEffect could be added here
-  // to call getInjuryHistory from databaseApi.ts, perhaps based on a stored user ID.
-  // For now, history will only be populated by actions like ADD_INJURY.
+  // Subscribe to user's assessments in Firestore
+  useEffect(() => {
+    if (!user) {
+      dispatch({ type: 'SET_INJURY_HISTORY', payload: [] });
+      return;
+    }
+
+    const q = query(
+      collection(db, 'assessments'),
+      where('userId', '==', user.uid)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const assessments = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as InjuryData[];
+
+      dispatch({ type: 'SET_INJURY_HISTORY', payload: assessments });
+    }, (error) => {
+      console.error('Error fetching assessments:', error);
+      dispatch({ type: 'SET_INJURY_HISTORY', payload: [] });
+    });
+
+    return () => unsubscribe();
+  }, [user]);
 
   // Handle online/offline status
   useEffect(() => {

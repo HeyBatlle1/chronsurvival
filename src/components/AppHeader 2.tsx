@@ -2,17 +2,23 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ChevronLeft, AlertTriangle, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-// import { auth } from '../config/firebase'; // Firebase import removed
+import { auth } from '../config/firebase';
 import ChironLogo from './ChironLogo';
 
 const AppHeader: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth(); // user will always be null from the updated AuthContext
+  const { user } = useAuth();
   const isHome = location.pathname === '/';
 
-  // handleSignOut function removed as it depended on Firebase auth.
-  // A new sign-out function will be needed if/when a new auth system is implemented.
+  const handleSignOut = async () => {
+    try {
+      await auth.signOut();
+      navigate('/');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
 
   return (
     <header className="bg-gray-900 border-b border-red-800 shadow-md">
@@ -43,10 +49,9 @@ const AppHeader: React.FC = () => {
             </span>
           </div>
 
-          {/* Sign-out button will not render as user is always null */}
-          {user && ( 
+          {user && (
             <button
-              onClick={() => { /* New sign-out logic would go here */ }}
+              onClick={handleSignOut}
               className="text-gray-400 hover:text-white"
               title="Sign Out"
             >

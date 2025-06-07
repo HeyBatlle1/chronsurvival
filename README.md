@@ -36,7 +36,6 @@ A live demo of ChironSurvival is available at: [https://chironsurvival.web.app](
 
 - React 18 with TypeScript
 - Vite for build tooling
-- Firebase Authentication & Firestore
 - TailwindCSS for styling
 - PWA capabilities
 - **Primary Medical AI:** [Custom Medical MCP Server](https://github.com/HeyBatlle1/medical-mcp-server) (integrating Army Ranger Handbook protocols)
@@ -57,13 +56,8 @@ A live demo of ChironSurvival is available at: [https://chironsurvival.web.app](
 
 3. Create a `.env` file in the root directory with your configuration:
    ```env
-   VITE_FIREBASE_API_KEY=your_api_key
-   VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
-   VITE_FIREBASE_PROJECT_ID=your_project_id
-   VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
-   VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
-   VITE_FIREBASE_APP_ID=your_app_id
    VITE_GOOGLE_AI_API_KEY=your_gemini_api_key
+   # Add other non-Firebase environment variables here
    ```
 
 4. Start the development server:
@@ -76,7 +70,7 @@ A live demo of ChironSurvival is available at: [https://chironsurvival.web.app](
 ```
 src/
 ├── components/       # Reusable UI components
-├── config/           # Firebase configuration
+├── config/           # Application configuration
 ├── context/          # React context providers
 ├── pages/            # Application pages
 ├── services/         # API and backend services
@@ -93,9 +87,10 @@ src/
    npm run build
    ```
 
-2. Deploy to Firebase:
+2. Deploy to your hosting provider (e.g., Netlify, Vercel):
    ```bash
-   firebase deploy
+   # Deployment commands vary by provider
+   # Example for Netlify: netlify deploy --prod
    ```
 
 ## 📱 PWA Installation

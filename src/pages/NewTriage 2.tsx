@@ -8,7 +8,6 @@ import ActionButton from '../components/ActionButton';
 import EmergencyDisclaimer from '../components/EmergencyDisclaimer';
 import { TraumaAssessmentRequest } from '../types';
 import { getTraumaAssessment } from '../services/medicalApi';
-import { saveInjuryRecord } from '../services/databaseApi';
 
 // Injury type options for quick selection
 const INJURY_TYPES = [
@@ -107,76 +106,17 @@ const NewTriage: React.FC = () => {
       // Call REAL API (not mock)
       const apiResponse = await getTraumaAssessment(request);
 
-      // Prepare location data for newInjury
-      let newInjuryLocation: GeolocationPosition | undefined = undefined;
-      if (location) { // location is the string state e.g., "lat,lng"
-        const parts = location.split(',');
-        if (parts.length === 2) {
-          const lat = parseFloat(parts[0].trim());
-          const lon = parseFloat(parts[1].trim());
-          if (!isNaN(lat) && !isNaN(lon)) {
-            newInjuryLocation = {
-              coords: {
-                latitude: lat,
-                longitude: lon,
-                accuracy: 0, // Using a default value for accuracy
-                altitude: null,
-                altitudeAccuracy: null,
-                heading: null,
-                speed: null,
-                // Adding toJSON to coords to satisfy the linter, though non-standard for GeolocationCoordinates
-                toJSON: function() { 
-                  return { 
-                    latitude: this.latitude, 
-                    longitude: this.longitude, 
-                    accuracy: this.accuracy,
-                    altitude: this.altitude,
-                    altitudeAccuracy: this.altitudeAccuracy,
-                    heading: this.heading,
-                    speed: this.speed
-                  }; 
-                }
-              },
-              timestamp: Date.now(), // Using current time for the position timestamp
-              toJSON: function() { return { coords: this.coords, timestamp: this.timestamp }; } // Ensure toJSON is present
-            };
-          }
-        }
-      }
-
       // Create new injury record with API response
       const newInjury = {
         id: uuidv4(),
         photoUrl: photoUrl || "https://images.pexels.com/photos/5879390/pexels-photo-5879390.jpeg",
         description,
-        location: newInjuryLocation, // Use the correctly typed location
+        location: location ? { coords: { latitude: 0, longitude: 0 } } : undefined,
         timestamp: Date.now(),
         triageStatus: 'analyzed' as const,
         injuryType: selectedInjuryTypes,
         ...apiResponse // Spread API response fields
       };
-
-      // Try to save to database via MCP server
-      try {
-        const injuryRecord = {
-          userId: 'anonymous-user', // TODO: Replace with real user ID when auth is added
-          mechanismOfInjury: description,
-          reportedSymptoms: selectedInjuryTypes.map(type => 
-            INJURY_TYPES.find(t => t.id === type)?.label || type
-          ),
-          severityLevel: apiResponse.severity_level,
-          conscious,
-          age: age ? parseInt(age) : undefined,
-          gender: gender || undefined,
-          obviousBleeding,
-          assessmentResult: apiResponse
-        };
-        
-        await saveInjuryRecord(injuryRecord);
-        console.log('Injury record saved to database');
-      } catch (dbError) {
-        console.warn('Failed to save to database, continuing with local storage:', dbError);
-      }
 
       // Update state and navigate
       dispatch({ type: 'ADD_INJURY', payload: newInjury });

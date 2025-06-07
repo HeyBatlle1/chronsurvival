@@ -27,9 +27,8 @@ dist-ssr
 .env
 .env.*
 
-# Firebase
-.firebase/
-firebase-debug.log
+# macOS launchd plist files
+com.user.medicalmcpserver.plist
 
 # Build files
 build/

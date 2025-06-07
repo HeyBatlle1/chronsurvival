@@ -33,6 +33,12 @@ export default defineConfig({
     })
   ],
   optimizeDeps: {
+    include: [
+      'firebase/app',
+      'firebase/auth',
+      'firebase/firestore',
+      'firebase/analytics'
+    ],
     exclude: ['lucide-react']
   },
   build: {
@@ -40,7 +46,8 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom']
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/analytics']
         }
       }
     }

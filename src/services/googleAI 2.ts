@@ -3,8 +3,8 @@ import { TraumaAssessmentRequest, TraumaAssessmentResponse } from '../types';
 
 // Use environment variable or fallback to a placeholder
 // This will be replaced with the actual API key in production
-const API_KEY = 'AIzaSyADMuzSG1LmapyrTzXKCS5vPAcU1OeCLxs';
-const MODEL_NAME = 'gemini-2.0-flash';
+const API_KEY = import.meta.env.VITE_GOOGLE_AI_API_KEY || 'mock-key-for-development';
+const MODEL_NAME = 'gemini-pro';
 
 // Initialize the API client conditionally
 let genAI: GoogleGenerativeAI | null = null;

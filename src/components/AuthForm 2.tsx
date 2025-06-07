@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-// Firebase imports removed
-// import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-// import { auth } from '../config/firebase';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../config/firebase';
 import { AlertTriangle } from 'lucide-react';
 import ActionButton from './ActionButton';
 
@@ -17,15 +16,17 @@ const AuthForm: React.FC = () => {
     setError(null);
     setLoading(true);
 
-    // Firebase authentication logic removed.
-    // Implement new authentication (e.g., Supabase) here when ready.
-    console.log('AuthForm submitted. Email:', email, 'Password:', password ? '******' : '');
-    setError("Authentication is currently disabled. This form is a placeholder.");
-    // Simulate a delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    setLoading(false);
-    // Note: No actual user state change will occur as AuthContext is also modified.
+    try {
+      if (isSignUp) {
+        await createUserWithEmailAndPassword(auth, email, password);
+      } else {
+        await signInWithEmailAndPassword(auth, email, password);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Authentication failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -85,6 +86,7 @@ const AuthForm: React.FC = () => {
           variant="primary"
           fullWidth
           disabled={loading}
+          type="submit"
         />
 
         <div className="text-center">
